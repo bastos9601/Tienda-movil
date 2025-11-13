@@ -1,10 +1,14 @@
+// Rutas para gestionar productos del catálogo
 const express = require('express');
 const router = express.Router();
+// Conexión a base de datos
 const db = require('../configuracion/basedatos');
+// Middlewares de autenticación/autorización
 const { verificarToken, verificarAdmin } = require('../middleware/autenticacion');
+// SDK de Cloudinary para subir imágenes
 const cloudinary = require('../configuracion/cloudinary');
 
-// Obtener todos los productos (público)
+// Obtener productos con filtros opcionales (público)
 router.get('/', async (req, res) => {
   try {
     const { categoria, busqueda, destacado } = req.query;
@@ -39,7 +43,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Obtener un producto por ID
+// Obtener un producto específico por ID (público)
 router.get('/:id', async (req, res) => {
   try {
     const [productos] = await db.query(
@@ -57,16 +61,16 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Subir imagen a Cloudinary
+// Subir imagen a Cloudinary (solo admin)
 router.post('/subir-imagen', verificarToken, verificarAdmin, async (req, res) => {
   try {
-    const { imagen } = req.body; // Base64 string
+    const { imagen } = req.body; // Cadena Base64
     
     if (!imagen) {
       return res.status(400).json({ mensaje: 'No se proporcionó imagen' });
     }
 
-    // Subir a Cloudinary
+    // Subir a Cloudinary dentro de la carpeta indicada; auto-detecta tipo de recurso
     const resultado = await cloudinary.uploader.upload(imagen, {
       folder: 'tienda-virtual/productos',
       resource_type: 'auto'
@@ -81,7 +85,7 @@ router.post('/subir-imagen', verificarToken, verificarAdmin, async (req, res) =>
   }
 });
 
-// Crear producto (solo admin)
+// Crear nuevo producto (solo admin)
 router.post('/', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const { nombre, descripcion, precio, precio_anterior, stock, imagen, categoria_id, destacado } = req.body;
@@ -97,7 +101,7 @@ router.post('/', verificarToken, verificarAdmin, async (req, res) => {
   }
 });
 
-// Actualizar producto (solo admin)
+// Actualizar información de un producto (solo admin)
 router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const { nombre, descripcion, precio, precio_anterior, stock, imagen, categoria_id, destacado, activo } = req.body;
@@ -117,7 +121,7 @@ router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
   }
 });
 
-// Eliminar producto (solo admin)
+// Eliminar un producto (solo admin)
 router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const [resultado] = await db.query('DELETE FROM productos WHERE id = ?', [req.params.id]);
@@ -132,4 +136,5 @@ router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
   }
 });
 
+// Exporta el router para montarlo bajo /api/productos
 module.exports = router;

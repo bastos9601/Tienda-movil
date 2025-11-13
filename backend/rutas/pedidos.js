@@ -1,18 +1,22 @@
+// Rutas para gestionar pedidos y sus detalles
 const express = require('express');
 const router = express.Router();
+// Conexión a base de datos (pool con promesas)
 const db = require('../configuracion/basedatos');
+// Middlewares de autenticación y autorización
 const { verificarToken, verificarAdmin } = require('../middleware/autenticacion');
 
-// Crear pedido
+// Crear un nuevo pedido para el usuario autenticado
 router.post('/', verificarToken, async (req, res) => {
   const conexion = await db.getConnection();
   
   try {
+    // Inicia una transacción para asegurar consistencia entre pedido, detalles y stock
     await conexion.beginTransaction();
     
     const { productos, direccion_envio, telefono_contacto, notas } = req.body;
     
-    // Calcular total
+    // Calcular el total del pedido y validar stock de cada producto
     let total = 0;
     for (const item of productos) {
       const [producto] = await conexion.query('SELECT precio, stock FROM productos WHERE id = ?', [item.producto_id]);
@@ -28,13 +32,13 @@ router.post('/', verificarToken, async (req, res) => {
       total += producto[0].precio * item.cantidad;
     }
     
-    // Crear pedido
+    // Crear el registro del pedido con el total calculado
     const [pedido] = await conexion.query(
       'INSERT INTO pedidos (usuario_id, total, direccion_envio, telefono_contacto, notas) VALUES (?, ?, ?, ?, ?)',
       [req.usuario.id, total, direccion_envio, telefono_contacto || null, notas || null]
     );
     
-    // Crear detalles y actualizar stock
+    // Crear detalles del pedido y actualizar el stock de cada producto
     for (const item of productos) {
       const [producto] = await conexion.query('SELECT precio FROM productos WHERE id = ?', [item.producto_id]);
       const precioUnitario = producto[0].precio;
@@ -51,18 +55,21 @@ router.post('/', verificarToken, async (req, res) => {
       );
     }
     
+    // Confirma la transacción si todo salió bien
     await conexion.commit();
     res.status(201).json({ mensaje: 'Pedido creado exitosamente', id: pedido.insertId, total });
     
   } catch (error) {
+    // Revierte la transacción ante cualquier error
     await conexion.rollback();
     res.status(500).json({ mensaje: 'Error al crear pedido', error: error.message });
   } finally {
+    // Libera la conexión al pool
     conexion.release();
   }
 });
 
-// Obtener pedidos del usuario
+// Obtener los pedidos del usuario autenticado (con detalles)
 router.get('/mis-pedidos', verificarToken, async (req, res) => {
   try {
     const [pedidos] = await db.query(
@@ -70,7 +77,7 @@ router.get('/mis-pedidos', verificarToken, async (req, res) => {
       [req.usuario.id]
     );
     
-    // Obtener detalles de cada pedido
+    // Obtener detalles de cada pedido (join para traer nombre e imagen del producto)
     for (let pedido of pedidos) {
       const [detalles] = await db.query(
         `SELECT dp.*, p.nombre as producto_nombre, p.imagen as producto_imagen 
@@ -88,7 +95,7 @@ router.get('/mis-pedidos', verificarToken, async (req, res) => {
   }
 });
 
-// Obtener todos los pedidos (solo admin)
+// Obtener todos los pedidos (requiere rol admin)
 router.get('/', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const [pedidos] = await db.query(
@@ -103,7 +110,7 @@ router.get('/', verificarToken, verificarAdmin, async (req, res) => {
   }
 });
 
-// Actualizar estado del pedido (solo admin)
+// Actualizar el estado de un pedido (requiere rol admin)
 router.put('/:id/estado', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const { estado } = req.body;
@@ -122,7 +129,7 @@ router.put('/:id/estado', verificarToken, verificarAdmin, async (req, res) => {
   }
 });
 
-// Eliminar pedido (solo admin)
+// Eliminar un pedido (requiere rol admin)
 router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const [resultado] = await db.query('DELETE FROM pedidos WHERE id = ?', [req.params.id]);
@@ -137,4 +144,5 @@ router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
   }
 });
 
+// Exporta el router para montarlo bajo /api/pedidos
 module.exports = router;

@@ -1,9 +1,12 @@
+// Rutas para gestionar categorías del catálogo
 const express = require('express');
 const router = express.Router();
+// Conexión a base de datos
 const db = require('../configuracion/basedatos');
+// Middlewares de autenticación/autorización
 const { verificarToken, verificarAdmin } = require('../middleware/autenticacion');
 
-// Obtener todas las categorías (público)
+// Obtener todas las categorías activas (acceso público)
 router.get('/', async (req, res) => {
   try {
     const [categorias] = await db.query('SELECT * FROM categorias WHERE activo = TRUE ORDER BY nombre');
@@ -13,7 +16,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Obtener todas las categorías incluyendo inactivas (solo admin)
+// Obtener todas las categorías incluyendo inactivas (requiere rol admin)
 router.get('/admin/todas', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const [categorias] = await db.query('SELECT * FROM categorias ORDER BY nombre');
@@ -23,7 +26,7 @@ router.get('/admin/todas', verificarToken, verificarAdmin, async (req, res) => {
   }
 });
 
-// Crear categoría (solo admin)
+// Crear nueva categoría (requiere rol admin)
 router.post('/', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const { nombre, descripcion, imagen } = req.body;
@@ -37,7 +40,7 @@ router.post('/', verificarToken, verificarAdmin, async (req, res) => {
   }
 });
 
-// Actualizar categoría (solo admin)
+// Actualizar una categoría existente (requiere rol admin)
 router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const { nombre, descripcion, imagen, activo } = req.body;
@@ -56,7 +59,7 @@ router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
   }
 });
 
-// Cambiar estado activo/inactivo de categoría (solo admin)
+// Activar/Desactivar una categoría (requiere rol admin)
 router.patch('/:id/estado', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const { activo } = req.body;
@@ -75,7 +78,7 @@ router.patch('/:id/estado', verificarToken, verificarAdmin, async (req, res) => 
   }
 });
 
-// Eliminar categoría (solo admin)
+// Eliminar una categoría (requiere rol admin)
 router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const [resultado] = await db.query('DELETE FROM categorias WHERE id = ?', [req.params.id]);
@@ -90,4 +93,5 @@ router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
   }
 });
 
+// Exporta el router para montarlo bajo /api/categorias
 module.exports = router;

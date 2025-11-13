@@ -1,14 +1,19 @@
+// Lista horizontal de categorías con selección tipo "chip"
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 
 export default function ListaCategorias({ categorias, categoriaSeleccionada, onCategoriaSelect }) {
   return (
+    // Contenedor principal con fondo y separador inferior
     <View style={estilos.contenedorCategorias}>
+      {/* Lista horizontal de chips */}
       <FlatList
         horizontal
+        // Agrega un chip "Todos" al inicio para limpiar el filtro
         data={[{ id: null, nombre: 'Todos' }, ...categorias]}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
+          // Chip presionable; aplica estilo activo si corresponde
           <TouchableOpacity
             style={[
               estilos.chipCategoria,
@@ -33,6 +38,7 @@ export default function ListaCategorias({ categorias, categoriaSeleccionada, onC
   );
 }
 
+// Estilos del listado y chips de categorías
 const estilos = StyleSheet.create({
   contenedorCategorias: {
     backgroundColor: '#fff',

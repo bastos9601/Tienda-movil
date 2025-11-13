@@ -1,26 +1,32 @@
+// Tarjeta visual para mostrar un producto y agregar al carrito
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function TarjetaProducto({ producto, onPress, onAgregarCarrito }) {
+  // Estado derivado: true si el producto no tiene stock
   const sinStock = producto.stock === 0;
 
   return (
+    // Contenedor presionable: navega al detalle del producto
     <TouchableOpacity style={estilos.tarjetaProducto} onPress={onPress}>
       <Image
         source={{ uri: producto.imagen || 'https://via.placeholder.com/150' }}
         style={estilos.imagenProducto}
       />
+      {/* Etiqueta visual cuando no hay stock */}
       {sinStock && (
         <View style={estilos.etiquetaSinStock}>
           <Text style={estilos.textoSinStock}>SIN STOCK</Text>
         </View>
       )}
+      {/* Etiqueta visual cuando existe precio anterior (oferta) */}
       {!sinStock && producto.precio_anterior && (
         <View style={estilos.etiquetaDescuento}>
           <Text style={estilos.textoDescuento}>OFERTA</Text>
         </View>
       )}
+      {/* Sección de información del producto */}
       <View style={estilos.infoProducto}>
         <Text style={estilos.nombreProducto} numberOfLines={2}>
           {producto.nombre}
@@ -32,6 +38,7 @@ export default function TarjetaProducto({ producto, onPress, onAgregarCarrito })
           )}
           <Text style={estilos.precio}>S/{producto.precio}</Text>
         </View>
+        {/* Botón para agregar al carrito, deshabilitado sin stock */}
         <TouchableOpacity 
           style={[estilos.botonAgregar, sinStock && estilos.botonDeshabilitado]} 
           onPress={onAgregarCarrito}
@@ -47,6 +54,7 @@ export default function TarjetaProducto({ producto, onPress, onAgregarCarrito })
   );
 }
 
+// Estilos visuales de la tarjeta de producto
 const estilos = StyleSheet.create({
   tarjetaProducto: {
     flex: 1,

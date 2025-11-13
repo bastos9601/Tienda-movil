@@ -1,9 +1,12 @@
+// Rutas relacionadas con el perfil de usuario
 const express = require('express');
 const router = express.Router();
+// Conexión a base de datos
 const db = require('../configuracion/basedatos');
+// Middleware para verificar autenticación del usuario
 const { verificarToken } = require('../middleware/autenticacion');
 
-// Obtener perfil del usuario autenticado
+// Obtener el perfil del usuario autenticado
 router.get('/perfil', verificarToken, async (req, res) => {
   try {
     const [usuarios] = await db.query(
@@ -21,7 +24,7 @@ router.get('/perfil', verificarToken, async (req, res) => {
   }
 });
 
-// Actualizar perfil
+// Actualizar los datos básicos del perfil del usuario autenticado
 router.put('/perfil', verificarToken, async (req, res) => {
   try {
     const { nombre, telefono, direccion } = req.body;
@@ -37,4 +40,5 @@ router.put('/perfil', verificarToken, async (req, res) => {
   }
 });
 
+// Exporta el router para montarlo bajo /api/usuarios
 module.exports = router;
