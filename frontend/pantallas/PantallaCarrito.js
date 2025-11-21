@@ -74,14 +74,17 @@ export default function PantallaCarrito() {
   // ==========================================================================
   // ESTADO LOCAL
   // ==========================================================================
-  // direccion: Dirección de envío ingresada por el usuario
-  // Si el usuario está logueado y tiene dirección guardada, la usa como valor inicial
-  // Si no, usa string vacío
-  const [direccion, setDireccion] = useState(usuario?.direccion || '');
+  // nombre: Nombre del cliente (siempre vacío, el cliente debe ingresarlo)
+  const [nombre, setNombre] = useState('');
   
-  // telefono: Teléfono de contacto ingresado por el usuario
-  // Si el usuario está logueado y tiene teléfono guardado, lo usa como valor inicial
-  const [telefono, setTelefono] = useState(usuario?.telefono || '');
+  // apellido: Apellido del cliente (siempre vacío, el cliente debe ingresarlo)
+  const [apellido, setApellido] = useState('');
+  
+  // direccion: Dirección de envío (siempre vacía, el cliente debe ingresarla)
+  const [direccion, setDireccion] = useState('');
+  
+  // telefono: Teléfono de contacto (siempre vacío, el cliente debe ingresarlo)
+  const [telefono, setTelefono] = useState('');
   
   // procesando: Indica si se está procesando el pedido
   // true = deshabilita el botón y muestra "Procesando..."
@@ -103,7 +106,23 @@ export default function PantallaCarrito() {
     }
 
     // ========================================================================
-    // VALIDACIÓN 2: Verificar que se haya ingresado una dirección
+    // VALIDACIÓN 2: Verificar que se haya ingresado el nombre
+    // ========================================================================
+    if (!nombre.trim()) {
+      Alert.alert('Nombre requerido', 'Por favor ingresa tu nombre');
+      return;
+    }
+
+    // ========================================================================
+    // VALIDACIÓN 3: Verificar que se haya ingresado el apellido
+    // ========================================================================
+    if (!apellido.trim()) {
+      Alert.alert('Apellido requerido', 'Por favor ingresa tu apellido');
+      return;
+    }
+
+    // ========================================================================
+    // VALIDACIÓN 4: Verificar que se haya ingresado una dirección
     // ========================================================================
     // trim() elimina espacios en blanco al inicio y final
     if (!direccion.trim()) {
@@ -150,9 +169,11 @@ export default function PantallaCarrito() {
               // ENVIAR PEDIDO AL BACKEND
               // ============================================================
               // POST http://localhost:3000/api/pedidos
-              // Body: { productos, direccion_envio, telefono_contacto }
+              // Body: { productos, nombre, apellido, direccion_envio, telefono_contacto }
               await api.post('/pedidos', {
                 productos,                      // Array de productos
+                nombre,                         // Nombre del cliente
+                apellido,                       // Apellido del cliente
                 direccion_envio: direccion,     // Dirección ingresada
                 telefono_contacto: telefono     // Teléfono ingresado
               });
@@ -166,7 +187,9 @@ export default function PantallaCarrito() {
               // Limpia el carrito (elimina todos los productos)
               vaciarCarrito();
               
-              // Limpia los campos de dirección y teléfono
+              // Limpia los campos del formulario
+              setNombre('');
+              setApellido('');
               setDireccion('');
               setTelefono('');
               
@@ -324,6 +347,22 @@ export default function PantallaCarrito() {
       <View style={estilos.seccionCheckout}>
         {/* Subtítulo de la sección */}
         <Text style={estilos.subtituloCheckout}>Información de envío</Text>
+        
+        {/* Input de nombre */}
+        <TextInput
+          style={estilos.input}
+          placeholder="Nombre"
+          value={nombre}
+          onChangeText={setNombre}
+        />
+        
+        {/* Input de apellido */}
+        <TextInput
+          style={estilos.input}
+          placeholder="Apellido"
+          value={apellido}
+          onChangeText={setApellido}
+        />
         
         {/* Input de dirección de envío */}
         <TextInput

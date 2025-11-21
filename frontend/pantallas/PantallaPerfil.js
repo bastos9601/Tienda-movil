@@ -97,11 +97,11 @@ export default function PantallaPerfil({ navigation }) {
         <View style={estilos.tarjeta}>
           <View style={estilos.itemInfo}>
             <Ionicons name="call-outline" size={20} color="#666" />
-            <Text style={estilos.textoInfo}>{usuario?.telefono || 'No especificado'}</Text>
+            <Text style={estilos.textoInfo}>{usuario?.telefono || '936185088'}</Text>
           </View>
           <View style={estilos.itemInfo}>
             <Ionicons name="location-outline" size={20} color="#666" />
-            <Text style={estilos.textoInfo}>{usuario?.direccion || 'No especificada'}</Text>
+            <Text style={estilos.textoInfo}>{usuario?.direccion || 'AV .UNION 258'}</Text>
           </View>
         </View>
       </View>
@@ -133,14 +133,14 @@ export default function PantallaPerfil({ navigation }) {
             <Text style={estilos.textoOpcion}>Gestionar Pedidos</Text>
             <Ionicons name="chevron-forward" size={24} color="#ccc" />
           </TouchableOpacity>
-          <TouchableOpacity 
+          {/* <TouchableOpacity 
             style={estilos.botonOpcion}
             onPress={() => navigation.navigate('ImportarProductos')}
           >
             <Ionicons name="cloud-download-outline" size={24} color="#10b981" />
             <Text style={[estilos.textoOpcion, { color: '#10b981' }]}>Importar Productos de Prueba</Text>
             <Ionicons name="chevron-forward" size={24} color="#ccc" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       )}
 

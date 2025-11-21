@@ -14,7 +14,7 @@ router.post('/', verificarToken, async (req, res) => {
     // Inicia una transacción para asegurar consistencia entre pedido, detalles y stock
     await conexion.beginTransaction();
     
-    const { productos, direccion_envio, telefono_contacto, notas } = req.body;
+    const { productos, nombre, apellido, direccion_envio, telefono_contacto, notas } = req.body;
     
     // Calcular el total del pedido y validar stock de cada producto
     let total = 0;
@@ -34,8 +34,8 @@ router.post('/', verificarToken, async (req, res) => {
     
     // Crear el registro del pedido con el total calculado
     const [pedido] = await conexion.query(
-      'INSERT INTO pedidos (usuario_id, total, direccion_envio, telefono_contacto, notas) VALUES (?, ?, ?, ?, ?)',
-      [req.usuario.id, total, direccion_envio, telefono_contacto || null, notas || null]
+      'INSERT INTO pedidos (usuario_id, total, nombre_cliente, apellido_cliente, direccion_envio, telefono_contacto, notas) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [req.usuario.id, total, nombre, apellido, direccion_envio, telefono_contacto || null, notas || null]
     );
     
     // Crear detalles del pedido y actualizar el stock de cada producto
@@ -99,7 +99,8 @@ router.get('/mis-pedidos', verificarToken, async (req, res) => {
 router.get('/', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const [pedidos] = await db.query(
-      `SELECT p.*, u.nombre as usuario_nombre, u.email as usuario_email 
+      `SELECT p.*, u.nombre as usuario_nombre, u.email as usuario_email,
+       p.nombre_cliente, p.apellido_cliente
        FROM pedidos p 
        JOIN usuarios u ON p.usuario_id = u.id 
        ORDER BY p.fecha_creacion DESC`

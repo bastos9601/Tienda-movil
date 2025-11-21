@@ -261,7 +261,7 @@ export default function PantallaInicio({ navigation }) {
       {/* Contiene el título y la barra de búsqueda */}
       <View style={estilos.encabezado}>
         {/* Título de la aplicación */}
-        <Text style={estilos.titulo}>Tienda Virtual</Text>
+        <Text style={estilos.titulo}>Tienda Mobil</Text>
         
         {/* Barra de búsqueda controlada */}
         <BarraBusqueda 

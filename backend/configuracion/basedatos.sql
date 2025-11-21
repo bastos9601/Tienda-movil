@@ -49,6 +49,8 @@ CREATE TABLE IF NOT EXISTS pedidos (
   usuario_id INT NOT NULL,                                                  -- Referencia al usuario que realiza el pedido
   total DECIMAL(10, 2) NOT NULL,                                           -- Importe total del pedido
   estado ENUM('pendiente', 'procesando', 'enviado', 'entregado', 'cancelado') DEFAULT 'pendiente', -- Estado del pedido
+  nombre_cliente VARCHAR(100),                                             -- Nombre del cliente que recibe el pedido
+  apellido_cliente VARCHAR(100),                                           -- Apellido del cliente que recibe el pedido
   direccion_envio TEXT NOT NULL,                                           -- Dirección de envío para el pedido
   telefono_contacto VARCHAR(20),                                           -- Teléfono de contacto del comprador
   notas TEXT,                                                              -- Notas adicionales (opcional)

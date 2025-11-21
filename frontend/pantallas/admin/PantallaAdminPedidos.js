@@ -70,7 +70,9 @@ export default function PantallaAdminPedidos() {
       <View style={estilos.encabezado}>
         <View>
           <Text style={estilos.idPedido}>Pedido #{item.id}</Text>
-          <Text style={estilos.cliente}>{item.usuario_nombre}</Text>
+          {item.nombre_cliente && item.apellido_cliente && (
+            <Text style={estilos.cliente}>{item.nombre_cliente} {item.apellido_cliente}</Text>
+          )}
           <Text style={estilos.email}>{item.usuario_email}</Text>
         </View>
         <View style={[estilos.etiquetaEstado, { backgroundColor: obtenerColorEstado(item.estado) }]}>
