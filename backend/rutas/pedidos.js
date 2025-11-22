@@ -6,8 +6,8 @@ const db = require('../configuracion/basedatos');
 // Middlewares de autenticación y autorización
 const { verificarToken, verificarAdmin } = require('../middleware/autenticacion');
 
-// Crear un nuevo pedido para el usuario autenticado
-router.post('/', verificarToken, async (req, res) => {
+// Crear un nuevo pedido (con o sin autenticación)
+router.post('/', async (req, res) => {
   const conexion = await db.getConnection();
   
   try {
@@ -15,6 +15,15 @@ router.post('/', verificarToken, async (req, res) => {
     await conexion.beginTransaction();
     
     const { productos, nombre, apellido, direccion_envio, telefono_contacto, notas } = req.body;
+    
+    // Validar que se proporcionen los datos mínimos requeridos
+    if (!nombre || !apellido || !direccion_envio || !telefono_contacto) {
+      throw new Error('Nombre, apellido, dirección y teléfono son requeridos');
+    }
+    
+    if (!productos || productos.length === 0) {
+      throw new Error('Debe incluir al menos un producto');
+    }
     
     // Calcular el total del pedido y validar stock de cada producto
     let total = 0;
@@ -33,9 +42,10 @@ router.post('/', verificarToken, async (req, res) => {
     }
     
     // Crear el registro del pedido con el total calculado
+    // usuario_id puede ser NULL para compras sin autenticación
     const [pedido] = await conexion.query(
       'INSERT INTO pedidos (usuario_id, total, nombre_cliente, apellido_cliente, direccion_envio, telefono_contacto, notas) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [req.usuario.id, total, nombre, apellido, direccion_envio, telefono_contacto || null, notas || null]
+      [null, total, nombre, apellido, direccion_envio, telefono_contacto || null, notas || null]
     );
     
     // Crear detalles del pedido y actualizar el stock de cada producto
@@ -102,7 +112,7 @@ router.get('/', verificarToken, verificarAdmin, async (req, res) => {
       `SELECT p.*, u.nombre as usuario_nombre, u.email as usuario_email,
        p.nombre_cliente, p.apellido_cliente
        FROM pedidos p 
-       JOIN usuarios u ON p.usuario_id = u.id 
+       LEFT JOIN usuarios u ON p.usuario_id = u.id 
        ORDER BY p.fecha_creacion DESC`
     );
     res.json(pedidos);

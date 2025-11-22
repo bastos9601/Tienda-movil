@@ -14,9 +14,10 @@ const PUERTO = process.env.PUERTO || 3000;
 // Habilita CORS para que la API pueda ser consumida desde otros dominios
 app.use(cors());
 // Parseo de cuerpos en JSON para las solicitudes con contenido application/json
-app.use(express.json());
+// Aumenta el límite a 10MB para permitir subida de imágenes en base64
+app.use(express.json({ limit: '10mb' }));
 // Parseo de cuerpos para formularios (application/x-www-form-urlencoded)
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Sirve archivos estáticos (imágenes u otros) desde la carpeta 'subidas' bajo la ruta /subidas
 app.use('/subidas', express.static('subidas'));
 

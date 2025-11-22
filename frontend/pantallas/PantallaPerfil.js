@@ -47,7 +47,7 @@ export default function PantallaPerfil({ navigation }) {
           <View style={estilos.avatarContenedor}>
             <Ionicons name="storefront" size={50} color="#fff" />
           </View>
-          <Text style={estilos.nombre}>Tienda Virtual</Text>
+          <Text style={estilos.nombre}>Tienda Mobil</Text>
           <Text style={estilos.email}>Modo Cliente</Text>
         </View>
 

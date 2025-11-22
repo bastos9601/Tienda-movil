@@ -73,7 +73,11 @@ export default function PantallaAdminPedidos() {
           {item.nombre_cliente && item.apellido_cliente && (
             <Text style={estilos.cliente}>{item.nombre_cliente} {item.apellido_cliente}</Text>
           )}
-          <Text style={estilos.email}>{item.usuario_email}</Text>
+          {item.usuario_email ? (
+            <Text style={estilos.email}>{item.usuario_email}</Text>
+          ) : (
+            <Text style={estilos.invitado}>Cliente invitado</Text>
+          )}
         </View>
         <View style={[estilos.etiquetaEstado, { backgroundColor: obtenerColorEstado(item.estado) }]}>
           <Text style={estilos.textoEstado}>{item.estado}</Text>
@@ -169,6 +173,7 @@ const estilos = StyleSheet.create({
   idPedido: { fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 4 },
   cliente: { fontSize: 16, color: '#666', marginBottom: 2 },
   email: { fontSize: 14, color: '#999' },
+  invitado: { fontSize: 14, color: '#f59e0b', fontStyle: 'italic' },
   etiquetaEstado: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 },
   textoEstado: { color: '#fff', fontSize: 12, fontWeight: '600', textTransform: 'capitalize' },
   separador: { height: 1, backgroundColor: '#e0e0e0', marginVertical: 12 },

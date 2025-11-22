@@ -46,17 +46,17 @@ CREATE TABLE IF NOT EXISTS usuarios (
 -- Tabla de pedidos: órdenes de compra realizadas por usuarios
 CREATE TABLE IF NOT EXISTS pedidos (
   id INT AUTO_INCREMENT PRIMARY KEY,                                        -- Identificador único del pedido
-  usuario_id INT NOT NULL,                                                  -- Referencia al usuario que realiza el pedido
+  usuario_id INT NULL,                                                      -- Referencia al usuario (NULL para compras sin registro)
   total DECIMAL(10, 2) NOT NULL,                                           -- Importe total del pedido
   estado ENUM('pendiente', 'procesando', 'enviado', 'entregado', 'cancelado') DEFAULT 'pendiente', -- Estado del pedido
-  nombre_cliente VARCHAR(100),                                             -- Nombre del cliente que recibe el pedido
-  apellido_cliente VARCHAR(100),                                           -- Apellido del cliente que recibe el pedido
+  nombre_cliente VARCHAR(100) NOT NULL,                                    -- Nombre del cliente que recibe el pedido
+  apellido_cliente VARCHAR(100) NOT NULL,                                  -- Apellido del cliente que recibe el pedido
   direccion_envio TEXT NOT NULL,                                           -- Dirección de envío para el pedido
-  telefono_contacto VARCHAR(20),                                           -- Teléfono de contacto del comprador
+  telefono_contacto VARCHAR(20) NOT NULL,                                  -- Teléfono de contacto del comprador
   notas TEXT,                                                              -- Notas adicionales (opcional)
   fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,                      -- Fecha de creación automática
   fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Fecha de actualización automática
-  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE       -- Si se elimina el usuario, elimina sus pedidos
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL      -- Si se elimina el usuario, mantiene el pedido
 );
 
 -- Tabla de detalles de pedidos: líneas de producto dentro de un pedido

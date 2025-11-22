@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Switch, Image, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../../configuracion/api';
 
@@ -49,11 +50,10 @@ export default function PantallaAdminFormularioProducto({ route, navigation }) {
 
       // Abrir selector de imágenes
       const resultado = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [4, 3],
-        quality: 0.8,
-        base64: true,
+        quality: 0.5,
       });
 
       if (!resultado.canceled) {
@@ -77,8 +77,7 @@ export default function PantallaAdminFormularioProducto({ route, navigation }) {
       const resultado = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
         aspect: [4, 3],
-        quality: 0.8,
-        base64: true,
+        quality: 0.5,
       });
 
       if (!resultado.canceled) {
@@ -92,17 +91,46 @@ export default function PantallaAdminFormularioProducto({ route, navigation }) {
   const subirImagen = async (imagenData) => {
     setSubiendoImagen(true);
     try {
-      const base64 = `data:image/jpeg;base64,${imagenData.base64}`;
-      
-      const respuesta = await api.post('/productos/subir-imagen', {
-        imagen: base64
-      });
+      // Comprimir y redimensionar la imagen
+      const imagenComprimida = await manipulateAsync(
+        imagenData.uri,
+        [{ resize: { width: 800 } }], // Redimensiona a máximo 800px de ancho
+        { compress: 0.6, format: SaveFormat.JPEG } // Comprime al 60%
+      );
 
-      setImagen(respuesta.data.url);
-      Alert.alert('Éxito', 'Imagen subida correctamente');
+      // Leer la imagen comprimida como base64
+      const response = await fetch(imagenComprimida.uri);
+      const blob = await response.blob();
+      
+      // Convertir blob a base64
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      
+      reader.onloadend = async () => {
+        try {
+          const base64data = reader.result;
+          
+          const respuesta = await api.post('/productos/subir-imagen', {
+            imagen: base64data
+          });
+
+          setImagen(respuesta.data.url);
+          Alert.alert('Éxito', 'Imagen subida correctamente');
+        } catch (error) {
+          console.error('Error al subir imagen:', error);
+          Alert.alert('Error', error.response?.data?.mensaje || 'No se pudo subir la imagen');
+        } finally {
+          setSubiendoImagen(false);
+        }
+      };
+      
+      reader.onerror = () => {
+        Alert.alert('Error', 'No se pudo leer la imagen');
+        setSubiendoImagen(false);
+      };
     } catch (error) {
-      Alert.alert('Error', 'No se pudo subir la imagen');
-    } finally {
+      console.error('Error al procesar imagen:', error);
+      Alert.alert('Error', 'No se pudo procesar la imagen');
       setSubiendoImagen(false);
     }
   };
