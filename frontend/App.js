@@ -94,7 +94,12 @@ function TabsInicio() {
             iconName = focused ? 'cart' : 'cart-outline';
           } else if (route.name === 'Perfil') {
             iconName = focused ? 'person' : 'person-outline';
+            
           }
+          // NUEVO PERFIL
+      //     else if (route.name === 'hugo') { 
+      //   iconName = focused ? 'person-circle' : 'person-circle-outline';
+      // }
           
           // Retornar el componente de icono con el nombre, tamaño y color
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -115,6 +120,8 @@ function TabsInicio() {
       
       {/* Pestaña de Perfil - Muestra el perfil del usuario y opciones de admin */}
       <Tab.Screen name="Perfil" component={PantallaPerfil} />
+      {/* <Tab.Screen name="hugo" component={PantallaPerfil} /> */}
+      
     </Tab.Navigator>
   );
 }

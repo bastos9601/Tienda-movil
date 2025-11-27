@@ -105,7 +105,7 @@ router.get('/mis-pedidos', verificarToken, async (req, res) => {
   }
 });
 
-// Obtener todos los pedidos (requiere rol admin)
+// Obtener todos los pedidos  si el usuario es invitado con LEFT JOIN el usuario el null(requiere rol admin)
 router.get('/', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const [pedidos] = await db.query(

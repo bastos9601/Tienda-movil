@@ -67,6 +67,7 @@ export default function PantallaInicio({ navigation }) {
   
   // busqueda: Texto ingresado en la barra de búsqueda
   // Se usa para filtrar productos por nombre o descripción
+  // BUSCADOR: Este estado almacena el texto que el usuario escribe en el input
   const [busqueda, setBusqueda] = useState('');
   
   // cargando: Indica si se están cargando los datos iniciales
@@ -110,6 +111,8 @@ export default function PantallaInicio({ navigation }) {
   // ==========================================================================
   // Este efecto se ejecuta cada vez que cambia la categoría seleccionada o la búsqueda
   // Hace una nueva petición al backend con los filtros actualizados
+  // BUSCADOR: Este useEffect detecta automáticamente cuando el usuario escribe en el buscador
+  // y recarga los productos filtrados sin necesidad de presionar un botón
   useEffect(() => {
     cargarProductos(); // Recarga productos con los filtros actuales
   }, [categoriaSeleccionada, busqueda]); // Se ejecuta cuando cambian estos valores
@@ -166,6 +169,7 @@ export default function PantallaInicio({ navigation }) {
   // ==========================================================================
   // Consulta productos del backend aplicando filtros de categoría y búsqueda
   // Se ejecuta cada vez que cambian los filtros
+  // BUSCADOR: Esta función es la que envía el texto de búsqueda al backend
   const cargarProductos = async () => {
     try {
       // Construye el objeto de parámetros de consulta (query params)
@@ -177,13 +181,15 @@ export default function PantallaInicio({ navigation }) {
         params.categoria = categoriaSeleccionada;
       }
       
-      // Si hay texto de búsqueda, agrega el filtro
+      // BUSCADOR: Si hay texto de búsqueda, agrega el filtro
       // Ejemplo: ?busqueda=laptop
+      // El backend buscará productos que contengan "laptop" en nombre o descripción
       if (busqueda) {
         params.busqueda = busqueda;
       }
       
       // GET http://localhost:3000/api/productos?categoria=2&busqueda=laptop
+      // BUSCADOR: Aquí se envía la petición con el parámetro 'busqueda' al backend
       const respuesta = await api.get('/productos', { params });
       
       // Actualiza el estado con los productos filtrados
@@ -263,13 +269,15 @@ export default function PantallaInicio({ navigation }) {
         {/* Título de la aplicación */}
         <Text style={estilos.titulo}>Tienda Mobil</Text>
         
-        {/* Barra de búsqueda controlada */}
+        {/* BUSCADOR: Componente de barra de búsqueda controlada */}
         <BarraBusqueda 
           // busqueda: Valor actual del input (estado)
           busqueda={busqueda} 
           
           // onBusquedaChange: Función que se ejecuta al escribir
           // Actualiza el estado 'busqueda' con el nuevo texto
+          // BUSCADOR: Cada vez que el usuario escribe, setBusqueda actualiza el estado
+          // y el useEffect detecta el cambio para recargar los productos filtrados
           onBusquedaChange={setBusqueda} 
         />
       </View>
