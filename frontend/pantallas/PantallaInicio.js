@@ -247,7 +247,7 @@ export default function PantallaInicio({ navigation }) {
       <View style={estilos.centrado}>
         {/* ActivityIndicator: Spinner de carga animado */}
         <ActivityIndicator 
-          size="large"        // Tamaño grande
+          size="large"        // Tamaño grande  
           color="#6366f1"     // Color morado/azul
         />
       </View>
