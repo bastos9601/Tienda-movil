@@ -79,7 +79,7 @@ export default function PantallaCarrito() {
   
   // apellido: Apellido del cliente (siempre vacío, el cliente debe ingresarlo)
   const [apellido, setApellido] = useState('');
-  
+   
   // direccion: Dirección de envío (siempre vacía, el cliente debe ingresarla)
   const [direccion, setDireccion] = useState('');
   

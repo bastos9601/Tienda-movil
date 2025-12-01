@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }) => {
         mensaje: error.response?.data?.mensaje || 'Error al registrar usuario' 
       };
     }
-  };
+  }
 
   // Cierra la sesión: borra token y datos persistidos
   const cerrarSesion = async () => {

@@ -18,7 +18,7 @@ router.post('/productos-prueba', verificarToken, verificarAdmin, async (req, res
     // Mapeo de nombres de categorías para mostrarlas en español
     const mapeoNombres = {
       "electronics": "Electrónica",
-      "jewelery": "Joyería",
+      "jewelery": "Joyería", 
       "men's clothing": "Ropa de Hombre",
       "women's clothing": "Ropa de Mujer"
     };
