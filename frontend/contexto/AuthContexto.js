@@ -50,28 +50,40 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Inicia sesión contra el backend y guarda token/usuario
-  const login = async (email, contrasena) => {
-    try {
-      // POST al backend: /api/auth/login
-      const respuesta = await api.post('/auth/login', { email, contrasena });
-      // Extrae token JWT y datos del usuario del backend
-      const { token, usuario: usuarioData } = respuesta.data;
-      
-      // Persiste token y usuario para futuras sesiones
-      await AsyncStorage.setItem('token', token);
-      await AsyncStorage.setItem('usuario', JSON.stringify(usuarioData));
-      
-      // Actualiza estado local con el usuario autenticado
-      setUsuario(usuarioData);
-      return { exito: true };
-    } catch (error) {
-      // Propaga un mensaje de error amigable
-      return { 
-        exito: false, 
-        mensaje: error.response?.data?.mensaje || 'Error al iniciar sesión' 
-      };
-    }
-  };
+const login = async (email, contrasena) => {
+  try {
+    // POST al backend: /api/auth/login
+    // Envía email y contraseña al servidor para autenticar al usuario
+    const respuesta = await api.post('/auth/login', { email, contrasena });
+
+    // Extrae token JWT y datos del usuario del backend
+    // respuesta.data contiene lo que devuelve tu backend
+    // usuario: usuarioData renombra la variable "usuario" a "usuarioData"
+    const { token, usuario: usuarioData } = respuesta.data;
+    
+    // Persiste token y usuario para futuras sesiones
+    // Guarda el token en almacenamiento local del dispositivo
+    await AsyncStorage.setItem('token', token);
+    // Guarda los datos del usuario en formato string (JSON.stringify)
+    await AsyncStorage.setItem('usuario', JSON.stringify(usuarioData));
+    
+    // Actualiza el estado local con el usuario autenticado
+    // Esto hace que la app sepa que el usuario ya está logueado
+    setUsuario(usuarioData);
+
+    // Retorna objeto indicando que la operación fue exitosa
+    return { exito: true };
+
+  } catch (error) {
+    // Si algo falla en el login (credenciales incorrectas, servidor caído, etc)
+    // Devuelve un mensaje más amigable
+    return { 
+      exito: false, 
+      mensaje: error.response?.data?.mensaje || 'Error al iniciar sesión' 
+    };
+  }
+};
+
 
   // Registra un nuevo usuario en el backend
   const registro = async (datos) => {

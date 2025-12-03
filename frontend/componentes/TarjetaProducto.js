@@ -32,11 +32,14 @@ export default function TarjetaProducto({ producto, onPress, onAgregarCarrito })
           {producto.nombre}
         </Text>
         <Text style={estilos.categoriaProducto}>{producto.categoria_nombre}</Text>
+
         <View style={estilos.contenedorPrecio}>
+
           {producto.precio_anterior && (
             <Text style={estilos.precioAnterior}>S/{producto.precio_anterior}</Text>
           )}
           <Text style={estilos.precio}>S/{producto.precio}</Text>
+          
         </View>
         {/* Botón para agregar al carrito, deshabilitado sin stock */}
         <TouchableOpacity 

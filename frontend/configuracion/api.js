@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Base URL de la API backend.
 // Cambia esta URL por la IP de tu computadora cuando pruebes en dispositivo físico
 // Ejemplo: 'http://192.168.1.100:3000/api' 'http://10.179.73.82:3000/api'si el backend corre en tu PC
-const URL_BASE = 'http://10.149.142.82:3000/api';
+const URL_BASE = 'http://10.204.219.82:3000/api';
 
 // Crea una instancia de axios preconfigurada
 const api = axios.create({
